@@ -15,7 +15,7 @@ load File.expand_path('../lib/omniauth-ekklesia.rb', __FILE__)
 #
 # EKKLESIA_CLIENT_ID defaults to 'discourse' if not set
 #
-class EkklesiaAuthenticator < ::Auth::OAuth2Authenticator
+class EkklesiaAuthenticator < ::Auth::Authenticator
   CLIENT_ID = ENV.fetch('EKKLESIA_CLIENT_ID', 'discourse')
   CLIENT_SECRET = ENV['EKKLESIA_CLIENT_SECRET']
   SITE_URL = ENV['EKKLESIA_SITE_URL']
