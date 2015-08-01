@@ -1,36 +1,39 @@
 # name: discourse-ekklesia
-# about: integration with the Ekklesia eDemocracy platform (https://github.com/edemocracy/ekklesia) (currently oauth, more to come)
+# about: integration with the Ekklesia eDemocracy platform (https://github.com/edemocracy/ekklesia)
 # version: 0.0.0
 # authors: Tobias dpausp <dpausp@posteo.de>
+
+# XXX: don't know if disabling works for auth providers, check discourse code
+# enabled_site_setting :ekklesia_oauth_enabled
 
 require 'auth/oauth2_authenticator'
 require 'omniauth-oauth2'
 
-
-# XXX: don't know if / how disabling works for auth providers, check discourse code 
-#enabled_site_setting :ekklesia_oauth_enabled
-
-
+# Strategy getting oauth2 authorization from a Ekklesia identity server.
+# client id + secret and Ekklesia site url must be passed like:
+#
+# omniauth.provider(
+#   :ekklesia,
+#   CLIENT_ID,
+#   CLIENT_SECRET,
+#   client_options: { site: SITE_URL }
+# )
 class OmniAuth::Strategies::Ekklesia < OmniAuth::Strategies::OAuth2
-
-  option :name, "ekklesia"
-
-  option :client_options, {
-        :authorize_url => '/oauth2/authorize/',
-        :token_url => '/oauth2/token/',
-  }
+  option :client_options,
+         authorize_url: '/oauth2/authorize/',
+         token_url: '/oauth2/token/'
 
   uid { raw_info['auid'] }
 
   info do
     {
-      :nickname => raw_info['username'],
+      nickname: raw_info['username']
     }
   end
 
   extra do
     {
-      'raw_info' => raw_info
+      raw_info: raw_info
     }
   end
 
@@ -42,51 +45,55 @@ class OmniAuth::Strategies::Ekklesia < OmniAuth::Strategies::OAuth2
   end
 end
 
-### register authenticator with discourse
-
+# Discourse OAuth2 authenticator using the Ekklesia omniauth strategy.
+# Following environment vars must be set:
+# * EKKLESIA_CLIENT_SECRET
+# * EKKLESIA_SITE_URL
+#
+# EKKLESIA_CLIENT_ID defaults to 'discourse' if not set
+#
 class EkklesiaAuthenticator < ::Auth::OAuth2Authenticator
-
-  CLIENT_ID = ENV["EKKLESIA_CLIENT_ID"]
-  CLIENT_SECRET = ENV["EKKLESIA_CLIENT_SECRET"]
-  SITE_URL = ENV["EKKLESIA_SITE_URL"]
+  CLIENT_ID = ENV.fetch('EKKLESIA_CLIENT_ID', 'discourse')
+  CLIENT_SECRET = ENV['EKKLESIA_CLIENT_SECRET']
+  SITE_URL = ENV['EKKLESIA_SITE_URL']
 
   def register_middleware(omniauth)
-    Rails.logger.info("registering ekklesia authenticator for #{SITE_URL} , client_id #{CLIENT_ID}")
-    omniauth.provider :ekklesia,
+    omniauth.provider(
+      :ekklesia,
       CLIENT_ID,
       CLIENT_SECRET,
       client_options: { site: SITE_URL }
+    )
+    Rails.logger.info("registered ekklesia authenticator for #{SITE_URL} ,"\
+      "client_id #{CLIENT_ID}")
   end
 
   def name
     'ekklesia'
   end
 
-  def initialize(opts={})
+  def initialize(opts = {})
     @opts = opts
   end
 
   def after_authenticate(auth_token)
-
     data = auth_token[:info]
     auid = auth_token[:uid]
 
     result = Auth::Result.new
     result.name = data[:nickname]
 
-    user_id = ::PluginStore.get(self.name, "auid_#{auid}")
+    user_id = ::PluginStore.get(name, "auid_#{auid}")
 
-    if user_id
-      result.user = User.where(id: user_id).first
-    end
+    result.user = User.where(id: user_id).first if user_id
 
     result.extra_data = {
       auid: auid
     }
 
     # only for development: supply valid mail adress to skip mail confirmation
-    #result.email = 'fake@adress.is'
-    #result.email_valid = true
+    # result.email = 'fake@adress.is'
+    # result.email_valid = true
     result
   end
 
@@ -94,18 +101,19 @@ class EkklesiaAuthenticator < ::Auth::OAuth2Authenticator
     auid = auth[:extra_data][:auid]
     ::PluginStore.set(name, "auid_#{auid}", user.id)
     user.change_trust_level! SiteSetting.ekklesia_auto_trust_level
-    auto_group = Group.where(:name => SiteSetting.ekklesia_auto_group).first
+    auto_group = Group.where(name: SiteSetting.ekklesia_auto_group).first
     user.groups << auto_group
   end
 end
 
-
 # TODO: login title i18n
-auth_provider :title => 'with Ekklesia',
-  :message => 'Log in!',
-  :frame_width => 920,
-  :frame_height => 800,
-  :authenticator => EkklesiaAuthenticator.new
+auth_provider(
+  title: 'with Ekklesia',
+  message: 'Log in!',
+  frame_width: 920,
+  frame_height: 800,
+  authenticator: EkklesiaAuthenticator.new
+)
 
 register_css <<CSS
 
