@@ -48,25 +48,23 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
 
     user_id = ::PluginStore.get(name, "auid_#{auid}")
 
-    user = User.where(id: user_id).first if user_id
-
-    if user
-      result.user = user
-      # increase user trust level to trust level granted by ekklesia auth
-      auto_trust_level = SiteSetting.ekklesia_auto_trust_level 
-      if user.trust_level < auto_trust_level
-        user.update_attribute(:trust_level, auto_trust_level)
-      end
+    if user_id
+      result.user = User.where(id: user_id).first
+      increase_user_trust_level result.user
     end
 
-    result.extra_data = {
-      auid: auid
-    }
+    result.extra_data = { auid: auid }
 
     # only for development: supply valid mail adress to skip mail confirmation
     # result.email = 'fake@adress.is'
     # result.email_valid = true
     result
+  end
+
+  def increase_user_trust_level(user)
+    # increase trust level to level granted by ekklesia auth
+    lvl = SiteSetting.ekklesia_auto_trust_level
+    user.update_attribute(:trust_level, lvl) if user.trust_level < lvl
   end
 
   def after_create_account(user, auth)
@@ -75,7 +73,7 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
     auto_group = Group.where(name: SiteSetting.ekklesia_auto_group).first
     user.groups << auto_group
     # XXX: saving the user obj recalculates the password hash. This leads to unintended email token invalidation.
-    # hack: remove raw password in user object to avoid recalculation.
+    # remove raw password in user object to avoid recalculation.
     user.instance_variable_set(:@raw_password, nil)
     user.update_attribute(:trust_level, SiteSetting.ekklesia_auto_trust_level)
   end

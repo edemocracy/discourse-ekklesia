@@ -1,1 +1,1 @@
-require_relative "./omniauth/strategies/ekklesia"
+require_relative './omniauth/strategies/ekklesia'
