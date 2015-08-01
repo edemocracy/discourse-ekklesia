@@ -7,17 +7,17 @@ require 'auth/oauth2_authenticator'
 require 'omniauth-oauth2'
 
 
-class OmniAuth::Strategies::Ekklesia < OmniAuth::Strategies::OAuth2
+# XXX: don't know if / how disabling works for auth providers, check discourse code 
+#enabled_site_setting :ekklesia_oauth_enabled
 
-  # TODO: make this configurable
-  SITE_URL = '<beoauth_server>'
+
+class OmniAuth::Strategies::Ekklesia < OmniAuth::Strategies::OAuth2
 
   option :name, "ekklesia"
 
   option :client_options, {
-        :site => SITE_URL,
-        :authorize_url => SITE_URL + '/oauth2/authorize/',
-        :token_url => SITE_URL + '/oauth2/token/',
+        :authorize_url => '/oauth2/authorize/',
+        :token_url => '/oauth2/token/',
   }
 
   uid { raw_info['auid'] }
@@ -46,14 +46,16 @@ end
 
 class EkklesiaAuthenticator < ::Auth::OAuth2Authenticator
 
-  # TODO: make this configurable
-  CLIENT_ID = '<client id>'
-  CLIENT_SECRET = '<client secret>'
+  CLIENT_ID = ENV["EKKLESIA_CLIENT_ID"]
+  CLIENT_SECRET = ENV["EKKLESIA_CLIENT_SECRET"]
+  SITE_URL = ENV["EKKLESIA_SITE_URL"]
 
   def register_middleware(omniauth)
+    Rails.logger.info("registering ekklesia authenticator for #{SITE_URL} , client_id #{CLIENT_ID}")
     omniauth.provider :ekklesia,
       CLIENT_ID,
-      CLIENT_SECRET
+      CLIENT_SECRET,
+      client_options: { site: SITE_URL }
   end
 
   def name
@@ -77,7 +79,7 @@ class EkklesiaAuthenticator < ::Auth::OAuth2Authenticator
     if user_id
       result.user = User.where(id: user_id).first
     end
-    
+
     result.extra_data = {
       auid: auid
     }
@@ -90,21 +92,20 @@ class EkklesiaAuthenticator < ::Auth::OAuth2Authenticator
 
   def after_create_account(user, auth)
     auid = auth[:extra_data][:auid]
-    ::PluginStore.set(self.name, "auid_#{auid}", user.id)
-    # TODO: make this configurable
-    user.change_trust_level! 3
-    # TODO: make group name configurable
-    auto_group = Group.where(:name => '<group name>').first
+    ::PluginStore.set(name, "auid_#{auid}", user.id)
+    user.change_trust_level! SiteSetting.ekklesia_auto_trust_level
+    auto_group = Group.where(:name => SiteSetting.ekklesia_auto_group).first
     user.groups << auto_group
   end
 end
 
-# TODO: make login title configurable
+
+# TODO: login title i18n
 auth_provider :title => 'with Ekklesia',
-    :message => 'Log in!',
-    :frame_width => 920,
-    :frame_height => 800,
-    :authenticator => EkklesiaAuthenticator.new
+  :message => 'Log in!',
+  :frame_width => 920,
+  :frame_height => 800,
+  :authenticator => EkklesiaAuthenticator.new
 
 register_css <<CSS
 

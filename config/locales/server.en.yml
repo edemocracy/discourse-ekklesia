@@ -1,0 +1,7 @@
+en:
+  site_settings:
+    ekklesia_oauth_enabled: "activate ekklesia auth"
+    ekklesia_auto_group: "group name assigned to ekklesia users"
+    ekklesia_auto_trust_level: "start trust level assigned to ekklesia users"
+    
+

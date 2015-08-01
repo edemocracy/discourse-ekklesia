@@ -1,0 +1,13 @@
+---
+plugins:
+#  ekklesia_oauth_enabled:
+#    default: true
+#    client: true
+
+  ekklesia_auto_group:
+    client: true
+
+  ekklesia_auto_trust_level:
+    default: 1
+    client: true
+
