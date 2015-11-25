@@ -1,12 +1,16 @@
 # name: discourse-ekklesia
-# about: integration with the Ekklesia eDemocracy platform (https://github.com/edemocracy/ekklesia)
-# version: 0.0.0
+# about: provides Ekklesia eDemocracy platform features for Discourse
+# version: 0.0.1
+# url: https://github.com/edemocracy
 # authors: Tobias dpausp <dpausp@posteo.de>
 
 # XXX: don't know if disabling works for auth providers, check discourse code
-# enabled_site_setting :ekklesia_oauth_enabled
+enabled_site_setting :ekklesia_enabled
 
 load File.expand_path('../lib/omniauth-ekklesia.rb', __FILE__)
+
+# add the following line somewhere in the code to open an interactive pry session in the current frame
+#require 'pry'; binding.pry
 
 # Discourse OAuth2 authenticator using the Ekklesia omniauth strategy.
 # Following environment vars must be set:
@@ -17,8 +21,8 @@ load File.expand_path('../lib/omniauth-ekklesia.rb', __FILE__)
 #
 class EkklesiaAuthenticator < ::Auth::Authenticator
   CLIENT_ID = ENV.fetch('EKKLESIA_CLIENT_ID', 'discourse')
-  CLIENT_SECRET = ENV['EKKLESIA_CLIENT_SECRET']
-  SITE_URL = ENV['EKKLESIA_SITE_URL']
+  CLIENT_SECRET = ENV.fetch('EKKLESIA_CLIENT_SECRET')
+  SITE_URL = ENV.fetch('EKKLESIA_SITE_URL')
 
   def register_middleware(omniauth)
     omniauth.provider(
@@ -43,6 +47,7 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
     data = auth_token[:info]
     auid = auth_token[:uid]
 
+    #require 'pry'; binding.pry
     result = Auth::Result.new
     result.name = data[:nickname]
 
@@ -50,14 +55,16 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
 
     if user_id
       result.user = User.where(id: user_id).first
-      increase_user_trust_level result.user
+      if result.user
+        increase_user_trust_level result.user
+      end
     end
 
     result.extra_data = { auid: auid }
 
     # only for development: supply valid mail adress to skip mail confirmation
-    # result.email = 'fake@adress.is'
-    # result.email_valid = true
+    #result.email = 'fake@adress.is'
+    #result.email_valid = true
     result
   end
 
@@ -71,7 +78,7 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
     auid = auth[:extra_data][:auid]
     ::PluginStore.set(name, "auid_#{auid}", user.id)
     auto_group = Group.where(name: SiteSetting.ekklesia_auto_group).first
-    user.groups << auto_group
+    user.groups << auto_group if auto_group
     # XXX: saving the user obj recalculates the password hash. This leads to unintended email token invalidation.
     # remove raw password in user object to avoid recalculation.
     user.instance_variable_set(:@raw_password, nil)
@@ -79,9 +86,9 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
   end
 end
 
-# TODO: login title i18n
 auth_provider(
-  title: 'with Ekklesia',
+  title_setting: "ekklesia_login_button_title",
+  enabled_setting: "ekklesia_enabled",
   message: 'Log in!',
   frame_width: 920,
   frame_height: 800,

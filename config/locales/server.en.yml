@@ -1,7 +1,8 @@
 en:
   site_settings:
-    ekklesia_oauth_enabled: "activate ekklesia auth"
+    ekklesia_enabled: "enable Ekklesia eDemocracy platform plugin?"
     ekklesia_auto_group: "group name assigned to ekklesia users"
     ekklesia_auto_trust_level: "start trust level assigned to ekklesia users"
+    ekklesia_login_button_title: "text to show on the ekklesia login button"
     
 
