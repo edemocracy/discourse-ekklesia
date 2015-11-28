@@ -23,22 +23,19 @@ ExternalLinkButton.prototype.render = function(buffer) {
   buffer.push(`</a>`);
 };
 
-
 export function initialize(application) {
   PostMenuComponent.reopen({
       buttonForEkklesiaPushMotion(post) {
           if (post.get('post_number') === 1) {
             console.log("ekklesia push motion button created from plugin!");
-            const url = window.location.protocol + "//" + window.location.host + "/posts/" + post.get('id');
-            const title = encodeURIComponent(post.get('topic.title'));
-            const from_url = encodeURIComponent(url);
-            const import_url = `https://abstimmung.piratenpartei.ch/new?from_format=discourse_post&from_url=${from_url}&title=${title}`;
+            const post_id = post.get('id');
+            const import_url = `https://abstimmung.piratenpartei.ch/new?source=discourse_pps&from_data=${post_id}`;
             return new ExternalLinkButton(import_url, 'ekklesia.push_motion', 'file-text-o');
           }
       }
   });
 };
-  
+
 
 export default {
   name: 'ekklesia-post-menu',
