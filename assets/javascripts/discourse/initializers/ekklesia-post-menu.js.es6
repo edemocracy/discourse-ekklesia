@@ -1,43 +1,40 @@
-// Provide a post menu button to push the first post in a topic to the Ekklesia portal as a motion.
-// This button can be activated by adding 'ekklesia-push-motion' to the post_menu setting.
+// Provide a link to push the first post in a topic to the Ekklesia portal as a motion.
 
-import { iconHTML } from 'discourse/helpers/fa-icon';
-import PostMenuComponent from 'discourse/components/post-menu';
-
-
-export const ExternalLinkButton = function(url, label, icon, opts) {
-  this.url = url;
-  this.label = label;
-  this.icon = icon;
-  this.opts = this.opts || opts || {};
-  this.target = "_blank";
-};
+import { h } from 'virtual-dom';
+import { withPluginApi } from 'discourse/lib/plugin-api';
+import { iconNode } from 'discourse/helpers/fa-icon';
 
 
-ExternalLinkButton.prototype.render = function(buffer) {
-  const opts = this.opts;
-  const label = I18n.t(this.label, opts.labelOptions);
+function addPushMotionLink(api) {
+  api.decorateWidget('post:before', (helper) => {
+    const post = helper.attrs;
 
-  buffer.push(`<a href="${this.url}" target="${this.target}" title="${label}" style="padding: 8px 10px">`);
-  if (this.icon) { buffer.push(iconHTML(this.icon)); }
-  buffer.push(`</a>`);
-};
-
-export function initialize(application) {
-  PostMenuComponent.reopen({
-      buttonForEkklesiaPushMotion(post) {
-          if (post.get('post_number') === 1) {
-            console.log("ekklesia push motion button created from plugin!");
-            const post_id = post.get('id');
-            const import_url = `https://abstimmung.piratenpartei.ch/new?source=discourse_pps&from_data=${post_id}`;
-            return new ExternalLinkButton(import_url, 'ekklesia.push_motion', 'file-text-o');
-          }
-      }
+    if (post.firstPost) {
+      console.log("ekklesia push motion button created from plugin!");
+      const title = encodeURIComponent(post.topic.title);
+      const post_id = post.id;
+      const portal_url = "https://abstimmung.piratenpartei.ch";
+      const import_url = portal_url + `/questions/new?source=discourse_pps&from_data=${post_id}`;
+      const label = I18n.t('ekklesia.push_motion');
+      const icon = iconNode('file-text-o'); 
+      return h('a', {href: import_url, target: 'ekklesia_portal'}, [icon, " ", label]);
+    };
   });
+};
+
+
+
+function initializePlugin(api) {
+
+  api.includePostAttributes('topic');
+  api.includePostAttributes('topic.title');
+  addPushMotionLink(api);
 };
 
 
 export default {
   name: 'ekklesia-post-menu',
-  initialize: initialize
-};
+  initialize() {
+    withPluginApi('0.1', api => initializePlugin(api))
+  }
+}
