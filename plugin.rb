@@ -1,6 +1,6 @@
 # name: discourse-ekklesia
 # about: provides Ekklesia eDemocracy platform features for Discourse
-# version: 0.0.1
+# version: 0.1.0
 # url: https://github.com/edemocracy
 # authors: Tobias dpausp <dpausp@posteo.de>
 
