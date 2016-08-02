@@ -1,6 +1,6 @@
 # name: discourse-ekklesia
 # about: provides Ekklesia eDemocracy platform features for Discourse
-# version: 0.1.0
+# version: 0.2.0
 # url: https://github.com/edemocracy
 # authors: Tobias dpausp <dpausp@posteo.de>
 
@@ -111,4 +111,17 @@ register_css <<CSS
   color: black;
 }
 
+/* try to match the look of a normal link for the password change link which is in the wrong div */
+
+a.change-id-password {
+  font-size: inherit !important;
+  color: #0088cc !important;
+}
+
+.change-id-password i {
+  font-size: inherit !important;
+  color: inherit !important;
+}
 CSS
+
+
