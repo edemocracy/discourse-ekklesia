@@ -4,6 +4,15 @@
 # url: https://github.com/edemocracy
 # authors: Tobias dpausp <dpausp@posteo.de>
 
+# If you don't allow other login methods (only via Ekklesia ID server), then the sign-up button can be hidden like that:
+#
+#    .sign-up-button {
+#      display: none !important;
+#    }
+#
+# (put this CSS in: Admin Area -> Customize -> CSS/HTML -> your style -> CSS)
+
+
 # XXX: don't know if disabling works for auth providers, check discourse code
 enabled_site_setting :ekklesia_enabled
 
@@ -98,7 +107,8 @@ auth_provider(
 register_css <<CSS
 
 .btn-social.ekklesia {
-  background: #dd4814;
+  background: rgb(253, 195, 0);
+  color: black;
 }
 
 CSS
