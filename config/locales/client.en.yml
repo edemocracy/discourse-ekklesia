@@ -5,5 +5,5 @@ en:
         title: with Ekklesia
     ekklesia:
       push_motion: "Send As Motion to Voting Portal"
-      change_id_password: "Change ID Server Password"
+      change_id_password: "Set ID Password"
 
