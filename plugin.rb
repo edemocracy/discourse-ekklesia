@@ -54,23 +54,25 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
   end
 
   def after_authenticate(auth_token)
-    data = auth_token[:info]
-    auid = auth_token[:uid]
-
     #require 'pry'; binding.pry
+    data = auth_token[:info]
+    extra = auth_token[:extra][:raw_info]
+    auid = auth_token[:uid]
+    user_type = extra[:type]
+
     result = Auth::Result.new
     result.name = data[:nickname]
 
     user_id = ::PluginStore.get(name, "auid_#{auid}")
 
     if user_id
-      result.user = User.where(id: user_id).first
-      if result.user
-        increase_user_trust_level result.user
+      result.user = user = User.where(id: user_id).first
+      if user
+        change_user_trust_level(user, user_type)
       end
     end
 
-    result.extra_data = { auid: auid }
+    result.extra_data = { auid: auid, type: user_type }
 
     # only for development: supply valid mail adress to skip mail confirmation
     #result.email = 'fake@adress.is'
@@ -78,21 +80,34 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
     result
   end
 
-  def increase_user_trust_level(user)
+  def change_user_trust_level(user, user_type)
     # increase trust level to level granted by ekklesia auth
-    lvl = SiteSetting.ekklesia_auto_trust_level
-    user.update_attribute(:trust_level, lvl) if user.trust_level < lvl
+    if user_type == "guest"
+      lvl = SiteSetting.ekklesia_auto_trust_level_guest
+    elsif user_type == "plain member"
+      lvl = SiteSetting.ekklesia_auto_trust_level_plain_member
+    elsif user_type == "eligible member"
+      lvl = SiteSetting.ekklesia_auto_trust_level_eligible_member
+    elsif user_type == "system user"
+      lvl = SiteSetting.ekklesia_auto_trust_level_system_user
+    end
+
+    user.update_attribute(:trust_level, lvl)
   end
 
   def after_create_account(user, auth)
     auid = auth[:extra_data][:auid]
+    user_type = auth[:extra_data][:type]
     ::PluginStore.set(name, "auid_#{auid}", user.id)
-    auto_group = Group.where(name: SiteSetting.ekklesia_auto_group).first
-    user.groups << auto_group if auto_group
+    if user_type == "eligible member" or user_type == "system user"
+      auto_group = Group.where(name: SiteSetting.ekklesia_auto_group).first
+      user.groups << auto_group if auto_group
+    end
     # XXX: saving the user obj recalculates the password hash. This leads to unintended email token invalidation.
     # remove raw password in user object to avoid recalculation.
     user.instance_variable_set(:@raw_password, nil)
-    user.update_attribute(:trust_level, SiteSetting.ekklesia_auto_trust_level)
+    change_user_trust_level(user, user_type)
+    user
   end
 end
 

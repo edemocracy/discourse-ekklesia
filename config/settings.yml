@@ -7,8 +7,20 @@ plugins:
   ekklesia_auto_group:
     client: true
 
-  ekklesia_auto_trust_level:
+  ekklesia_auto_trust_level_guest:
+    default: 0
+    client: true
+
+  ekklesia_auto_trust_level_plain_member:
     default: 1
+    client: true
+
+  ekklesia_auto_trust_level_eligible_member:
+    default: 2
+    client: true
+
+  ekklesia_auto_trust_level_system_user:
+    default: 4
     client: true
 
   ekklesia_login_button_title:

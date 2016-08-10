@@ -1,8 +1,11 @@
 en:
   site_settings:
     ekklesia_enabled: "enable Ekklesia eDemocracy platform plugin?"
-    ekklesia_auto_group: "group name assigned to ekklesia users"
-    ekklesia_auto_trust_level: "start trust level assigned to ekklesia users"
+    ekklesia_auto_group: "group name assigned to ekklesia users with type eligible member or system user"
+    ekklesia_auto_trust_level_guest: "start trust level assigned to ekklesia users with type guest"
+    ekklesia_auto_trust_level_plain_member: "start trust level assigned to ekklesia users with type plain member"
+    ekklesia_auto_trust_level_eligible_member: "start trust level assigned to ekklesia users with type eligible member"
+    ekklesia_auto_trust_level_system_user: "start trust level assigned to ekklesia users with type system user"
     ekklesia_login_button_title: "text to show on the ekklesia login button"
     
 
