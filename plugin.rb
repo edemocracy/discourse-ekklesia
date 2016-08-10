@@ -3,6 +3,9 @@
 # version: 0.2.0
 # url: https://github.com/edemocracy
 # authors: Tobias dpausp <dpausp@posteo.de>
+# required_version: 1.6
+
+load File.expand_path('../lib/omniauth-ekklesia.rb', __FILE__)
 
 # If you don't allow other login methods (only via Ekklesia ID server), then the sign-up button can be hidden like that:
 #
@@ -15,8 +18,6 @@
 
 # XXX: don't know if disabling works for auth providers, check discourse code
 enabled_site_setting :ekklesia_enabled
-
-load File.expand_path('../lib/omniauth-ekklesia.rb', __FILE__)
 
 # add the following line somewhere in the code to open an interactive pry session in the current frame
 #require 'pry'; binding.pry
@@ -123,5 +124,3 @@ a.change-id-password {
   color: inherit !important;
 }
 CSS
-
-
