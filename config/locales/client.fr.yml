@@ -1,0 +1,8 @@
+fr:
+  js:
+    login:
+      ekklesia:
+        title: via Ekklesia
+    ekklesia:
+      push_motion: "Send motion to voting portal"
+

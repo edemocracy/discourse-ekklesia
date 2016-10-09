@@ -7,5 +7,8 @@ en:
     ekklesia_auto_trust_level_eligible_member: "start trust level assigned to ekklesia users with type eligible member"
     ekklesia_auto_trust_level_system_user: "start trust level assigned to ekklesia users with type system user"
     ekklesia_login_button_title: "text to show on the ekklesia login button"
+    ekklesia_site_url: "URL of the Ekklesia ID server (requires restart)"
+    ekklesia_client_id: "OAuth client ID for Ekklesia (requires restart)"
+    ekklesia_client_secret: "OAuth client secret for Ekklesia (requires restart)"
     
 

@@ -23,26 +23,23 @@ enabled_site_setting :ekklesia_enabled
 #require 'pry'; binding.pry
 
 # Discourse OAuth2 authenticator using the Ekklesia omniauth strategy.
-# Following environment vars must be set:
-# * EKKLESIA_CLIENT_SECRET
-# * EKKLESIA_SITE_URL
+# Following config vars must be set:
+# * ekklesia_client_secret
+# * ekklesia_site_url
 #
-# EKKLESIA_CLIENT_ID defaults to 'discourse' if not set
+# ekklesia_client_id defaults to 'discourse' if not set
 #
 class EkklesiaAuthenticator < ::Auth::Authenticator
-  CLIENT_ID = ENV.fetch('EKKLESIA_CLIENT_ID', 'discourse')
-  CLIENT_SECRET = ENV.fetch('EKKLESIA_CLIENT_SECRET')
-  SITE_URL = ENV.fetch('EKKLESIA_SITE_URL')
 
   def register_middleware(omniauth)
     omniauth.provider(
       :ekklesia,
-      CLIENT_ID,
-      CLIENT_SECRET,
-      client_options: { site: SITE_URL }
-    )
-    Rails.logger.info("registered ekklesia authenticator for #{SITE_URL} ,"\
-      "client_id #{CLIENT_ID}")
+      SiteSetting.ekklesia_client_id,
+      SiteSetting.ekklesia_client_secret,
+      client_options: { site: SiteSetting.ekklesia_site_url })
+  
+      Rails.logger.info("registered ekklesia authenticator for #{SiteSetting.ekklesia_site_url} ,"\
+                        "client_id #{SiteSetting.ekklesia_client_id}")
   end
 
   def name

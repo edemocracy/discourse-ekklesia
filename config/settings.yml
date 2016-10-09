@@ -27,3 +27,13 @@ plugins:
     default: "with Ekklesia"
     client: true
 
+  ekklesia_client_id:
+    default: "discourse"
+    client: true
+
+  ekklesia_client_secret:
+    client: true
+
+  ekklesia_site_url:
+    client: true
+
