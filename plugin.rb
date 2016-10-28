@@ -64,8 +64,15 @@ class EkklesiaAuthenticator < ::Auth::Authenticator
 
     if user_id
       result.user = user = User.where(id: user_id).first
+
       if user
-        change_user_trust_level(user, user_type)
+        if user.active
+          result.user = user
+          change_user_trust_level(user, user_type)
+        else
+          result.failed = true
+          result.failed_reason = I18n.t("ekklesia.inactive_user")
+        end
       end
     end
 

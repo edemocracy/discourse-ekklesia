@@ -1,4 +1,6 @@
 en:
+  ekklesia:
+    inactive_user: "ERROR: There's an inactive Discourse user for this login name. Did you forget to activate your user account? Please check your email."
   site_settings:
     ekklesia_enabled: "enable Ekklesia eDemocracy platform plugin?"
     ekklesia_auto_group: "group name assigned to ekklesia users with type eligible member or system user"
