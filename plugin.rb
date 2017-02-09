@@ -1,9 +1,9 @@
 # name: discourse-ekklesia
 # about: provides Ekklesia eDemocracy platform features for Discourse
-# version: 0.2.0
+# version: 0.3.0
 # url: https://github.com/edemocracy
 # authors: Tobias dpausp <dpausp@posteo.de>
-# required_version: 1.6
+# required_version: 1.7
 
 load File.expand_path('../lib/omniauth-ekklesia.rb', __FILE__)
 

@@ -2,7 +2,7 @@
 
 import { h } from 'virtual-dom';
 import { withPluginApi } from 'discourse/lib/plugin-api';
-import { iconNode } from 'discourse/helpers/fa-icon';
+import { iconNode } from 'discourse/helpers/fa-icon-node';
 
 
 function addPushMotionLink(api) {
