@@ -10,7 +10,6 @@ function addPushMotionLink(api) {
     const post = helper.attrs;
 
     if (post.firstPost) {
-      console.log("ekklesia push motion button created from plugin!");
       const title = encodeURIComponent(post.topic.title);
       const post_id = post.id;
       const portal_url = "https://abstimmung.piratenpartei.ch";
@@ -24,7 +23,6 @@ function addPushMotionLink(api) {
 
 function addChangePasswordLink(api) {
   api.decorateWidget('user-menu-links:after', (helper) => {
-    console.log("add change pw link");
     const change_pw_url = "https://id.piratenpartei.ch/password";
     const label = I18n.t('ekklesia.change_id_password');
     const icon = iconNode('key'); 
