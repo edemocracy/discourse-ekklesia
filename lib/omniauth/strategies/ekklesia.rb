@@ -28,6 +28,10 @@ module OmniAuth
         }
       end
 
+      def callback_url
+        full_host + script_name + callback_path
+      end
+
       def raw_info
         info = access_token.get('/api/v1/user/auid/').parsed
         info.merge!(access_token.get('/api/v1/user/profile/').parsed)
