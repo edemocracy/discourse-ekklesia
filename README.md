@@ -7,11 +7,12 @@ Features:
 
 * OAuth2 login via Ekklesia's identity server
 * automatic group / trust level assignment for users identified by the id server
+* pushing motions to the Ekklesia portal ("Antrag stellen")
 
 Planned Features:
 
 * support for multiple id servers
-* pushing motions to the Ekklesia portal ("Antrag stellen")
+* more configuration options, some server URLs are still hard-coded
 * ... more to come
 
 
@@ -25,7 +26,7 @@ For a standard docker installation:
 
 Add to following line to the `hooks` section in your discourse container config:
 
-    - git clone https://github.com/ekklesia/discourse-ekklesia.git
+    - git clone https://github.com/dpausp/discourse-ekklesia.git
 
 Rebuild the docker container:
 
@@ -36,10 +37,10 @@ Rebuild the docker container:
 
 Clone the plugin repository to your discourse plugin dir and restart:
 
-    git clone https://github.com/ekklesia/discourse-ekklesia.git 
+    git clone https://github.com/dpausp/discourse-ekklesia.git 
 
 
 Configuration
 -------------
 
-TODO
+Everything can be configured in the Discourse admin area. You must at least set the client ID, client secret and the URL of the Ekklesia ID Server.
