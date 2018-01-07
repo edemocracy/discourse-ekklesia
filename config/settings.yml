@@ -6,6 +6,7 @@ plugins:
 
   ekklesia_auto_group:
     client: true
+    default: ekklesia
 
   ekklesia_auto_trust_level_guest:
     default: 0
@@ -33,7 +34,8 @@ plugins:
 
   ekklesia_client_secret:
     client: true
+    default: ekklesia_secret
 
   ekklesia_site_url:
     client: true
-
+    default: https://ekklesia_id_server
