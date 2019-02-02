@@ -34,7 +34,6 @@ module OmniAuth
 
       def raw_info
         info = access_token.get('/api/v1/user/auid/').parsed
-        info.merge!(access_token.get('/api/v1/user/profile/').parsed)
         info.merge!(access_token.get('/api/v1/user/membership/').parsed)
         info
       end
