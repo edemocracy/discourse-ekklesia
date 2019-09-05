@@ -12,8 +12,8 @@ function addPushMotionLink(api) {
     if (post.firstPost) {
       const title = encodeURIComponent(post.topic.title);
       const post_id = post.id;
-      const portal_url = "https://abstimmung.piratenpartei.ch";
-      const import_url = portal_url + `/questions/new?source=discourse_pps&from_data=${post_id}`;
+      const portal_url = "http://ekklesia-portal-local:8080";
+      const import_url = portal_url + `/p/+new?source=testdiscourse&from_data=${post_id}`;
       const label = I18n.t('ekklesia.push_motion');
       const icon = iconNode('file-text-o'); 
       return h('a', {href: import_url, target: 'ekklesia_portal'}, [icon, " ", label]);
@@ -23,7 +23,7 @@ function addPushMotionLink(api) {
 
 function addChangePasswordLink(api) {
   api.decorateWidget('user-menu-links:after', (helper) => {
-    const change_pw_url = "https://id.piratenpartei.ch/password";
+    const change_pw_url = "https://testid.televotia.ch/password";
     const label = I18n.t('ekklesia.change_id_password');
     const icon = iconNode('key'); 
     const link = h('a.widget-link.change-id-password', {href: change_pw_url, target: 'ekklesia_id'}, [icon, " ", label]);
